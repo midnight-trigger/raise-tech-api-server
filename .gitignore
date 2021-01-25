@@ -1,0 +1,10 @@
+.idea/*
+vendor/*
+/log/
+/.env
+.*.swp
+.vscode/*
+/tmp/
+/dev_tools/tools/
+.local
+/tasks/.env
