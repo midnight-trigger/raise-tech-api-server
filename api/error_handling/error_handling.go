@@ -12,7 +12,7 @@ type ErrorHandling struct {
 	ErrStack      error
 }
 
-func (e *ErrorHandling) CognitoErrorFoundException(stackErr error, errMessage string) {
+func (e *ErrorHandling) ImageUploadException(stackErr error, errMessage string) {
 	e.Code = http.StatusBadRequest
 	e.ErrMessage = errMessage
 	e.setSlackErrorInfo(stackErr, "")

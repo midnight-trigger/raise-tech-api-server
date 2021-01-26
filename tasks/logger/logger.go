@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/midnight-trigger/todo/configs"
+	"github.com/midnight-trigger/raise-tech-api-server/configs"
 
 	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"

@@ -1,7 +1,7 @@
 package infra
 
 import (
-	"github.com/midnight-trigger/todo/infra/mysql"
+	"github.com/midnight-trigger/raise-tech-api-server/infra/mysql"
 )
 
 func Init() {

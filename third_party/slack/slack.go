@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/midnight-trigger/todo/third_party/http_client"
+	"github.com/midnight-trigger/raise-tech-api-server/third_party/http_client"
 
 	"github.com/spf13/viper"
 )

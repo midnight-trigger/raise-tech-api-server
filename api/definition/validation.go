@@ -2,9 +2,9 @@ package definition
 
 import (
 	"github.com/labstack/echo"
-	"github.com/midnight-trigger/todo/api/error_handling"
-	"github.com/midnight-trigger/todo/configs"
-	"github.com/midnight-trigger/todo/logger"
+	"github.com/midnight-trigger/raise-tech-api-server/api/error_handling"
+	"github.com/midnight-trigger/raise-tech-api-server/configs"
+	"github.com/midnight-trigger/raise-tech-api-server/logger"
 
 	"github.com/go-playground/validator/v10"
 )

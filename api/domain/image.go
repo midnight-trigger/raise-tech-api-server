@@ -2,55 +2,115 @@ package domain
 
 import (
 	"errors"
+	"mime/multipart"
+	"net/http"
+	"os"
+	"strconv"
+	"strings"
 
-	"github.com/midnight-trigger/todo/api/definition"
-	"github.com/midnight-trigger/todo/infra/mysql"
-	"github.com/midnight-trigger/todo/logger"
+	"github.com/disintegration/imaging"
+	"github.com/labstack/echo"
+	"github.com/midnight-trigger/raise-tech-api-server/api/error_handling"
+	"github.com/midnight-trigger/raise-tech-api-server/infra/s3"
+	"github.com/midnight-trigger/raise-tech-api-server/logger"
+	"github.com/shopspring/decimal"
+	"github.com/spf13/viper"
 )
 
-type Todo struct {
+type Image struct {
 	Base
-	MTodos mysql.ITodos
 }
 
-func GetNewTodoService() *Todo {
-	todo := new(Todo)
-	todo.MUsers = mysql.GetNewUser()
-	todo.MTodos = mysql.GetNewTodo()
-	return todo
+func GetNewImageService() *Image {
+	image := new(Image)
+	return image
 }
 
-// Todo検索・一覧取得
-func (s *Todo) GetTodos(params *definition.GetTodosParam, userId string) (r Result) {
+func (s *Image) PostImage(fileName string) (r Result) {
 	r.New()
 
-	// 検索条件（クエリパラメータ）をもとにTodoを検索・一覧を取得
-	todos, err := s.MTodos.FindByQuery(params, userId)
+	return
+}
+
+func GetImageFileName(ctx echo.Context) (fileName string, err error) {
+	r := ctx.Request()
+	r.Body = http.MaxBytesReader(ctx.Response(), r.Body, viper.GetInt64("image.maxSize"))
+
+	file, fileHeader, err := r.FormFile("image")
 	if err != nil {
-		r.ServerErrorException(errors.New(""), err.Error())
+		if err.Error() == "http: request body too large" {
+			limit := strconv.FormatInt(viper.GetInt64("image.maxSize")/(1024*1000), 10)
+			err = errors.New(error_handling.GetValidationErrorMessage("", "imageSize", limit))
+		} else {
+			err = errors.New(err.Error())
+		}
+		logger.L.Error(err)
+		return
+	}
+	defer file.Close()
+
+	imgSrc, err := imaging.Decode(file, imaging.AutoOrientation(true))
+	format := strings.Split(fileHeader.Filename, ".")[1]
+	if err != nil {
+		err = errors.New(error_handling.GetValidationErrorMessage("", "imageType", ""))
 		logger.L.Error(err)
 		return
 	}
 
-	// レスポンス作成
-	var responses []*definition.GetTodosResponse
-	for _, todo := range todos {
-		response := new(definition.GetTodosResponse)
-		s.SetStructOnSameField(todo, response)
-		responses = append(responses, response)
-	}
-	r.Data = responses
+	bucket := viper.GetString("image.Bucket")
+	var f multipart.File
+	dst := "image." + format
 
-	pagination := new(Pagination)
-	s.SetStructOnSameField(params, pagination)
+	rctSrc := imgSrc.Bounds()
+	width := rctSrc.Dx()
+	height := rctSrc.Dy()
+	maxWidth := viper.GetInt("image.maxWidth")
+	maxHeight := viper.GetInt("image.maxHeight")
 
-	// 検索条件に一致するTodo数を取得・レスポンスに含める
-	pagination.Total, err = s.MTodos.GetTotalCount(params, userId)
-	if err != nil {
-		r.ServerErrorException(errors.New(""), err.Error())
-		logger.L.Error(err)
-		return
+	if width > maxWidth || height > maxHeight {
+		widthRatio := decimal.NewFromFloat(float64(maxWidth)).Div(decimal.NewFromFloat(float64(width)))
+		heightRatio := decimal.NewFromFloat(float64(maxHeight)).Div(decimal.NewFromFloat(float64(height)))
+
+		var ratio decimal.Decimal
+		wr, _ := widthRatio.Float64()
+		hr, _ := heightRatio.Float64()
+		if wr < hr {
+			ratio = widthRatio
+		} else {
+			ratio = heightRatio
+		}
+
+		newWidth := int(ratio.Mul(decimal.NewFromFloat(float64(width))).IntPart())
+		newHeight := int(ratio.Mul(decimal.NewFromFloat(float64(height))).IntPart())
+
+		imgSrc = imaging.Resize(imgSrc, newWidth, newHeight, imaging.Lanczos)
+		err = imaging.Save(imgSrc, dst)
+		if err != nil {
+			err = errors.New(err.Error())
+			logger.L.Error(err)
+			return
+		}
+		f, err = os.Open(dst)
+		if err != nil {
+			err = errors.New(err.Error())
+			logger.L.Error(err)
+			return
+		}
+	} else {
+		f, _, err = r.FormFile("image")
+		if err != nil {
+			err = errors.New(err.Error())
+			logger.L.Error(err)
+			return
+		}
 	}
-	r.Pagination = pagination
+
+	fileName, err = s3.UploadImageToS3(f, format, bucket)
+
+	defer func() {
+		f.Close()
+		os.Remove(dst)
+	}()
+
 	return
 }

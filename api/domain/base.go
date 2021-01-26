@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	"github.com/midnight-trigger/todo/api/error_handling"
-	"github.com/midnight-trigger/todo/configs"
-	"github.com/midnight-trigger/todo/logger"
+	"github.com/midnight-trigger/raise-tech-api-server/api/error_handling"
+	"github.com/midnight-trigger/raise-tech-api-server/configs"
+	"github.com/midnight-trigger/raise-tech-api-server/logger"
 )
 
 type Base struct {

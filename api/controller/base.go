@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo"
-	"github.com/midnight-trigger/todo/api/domain"
-	"github.com/midnight-trigger/todo/third_party/slack"
+	"github.com/midnight-trigger/raise-tech-api-server/api/domain"
+	"github.com/midnight-trigger/raise-tech-api-server/third_party/slack"
 )
 
 type Base struct {

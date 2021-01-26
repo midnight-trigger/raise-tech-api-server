@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo"
-	"github.com/midnight-trigger/todo/logger"
+	"github.com/midnight-trigger/raise-tech-api-server/logger"
 	"github.com/pkg/errors"
 )
 

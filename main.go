@@ -4,12 +4,11 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/midnight-trigger/todo/api"
-
-	"github.com/midnight-trigger/todo/configs"
-	"github.com/midnight-trigger/todo/infra"
-	"github.com/midnight-trigger/todo/infra/mysql"
-	"github.com/midnight-trigger/todo/logger"
+	"github.com/midnight-trigger/raise-tech-api-server/api"
+	"github.com/midnight-trigger/raise-tech-api-server/configs"
+	"github.com/midnight-trigger/raise-tech-api-server/infra"
+	"github.com/midnight-trigger/raise-tech-api-server/infra/mysql"
+	"github.com/midnight-trigger/raise-tech-api-server/logger"
 
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/labstack/echo"
@@ -39,7 +38,6 @@ func main() {
 	defer mysql.Orm().Close()
 
 	requiredAuthGroup := e.Group("")
-	//requiredAuthGroup.Use(middleware.JWTWithConfig(jwt.GetMiddlewareJWTConfig()))
 
 	api.RegisterRoutes(e)
 	api.RegisterAuthRoutes(requiredAuthGroup)

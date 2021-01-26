@@ -4,21 +4,21 @@ package api
 
 import (
 	"github.com/labstack/echo"
-	"github.com/midnight-trigger/todo/api/controller"
+	"github.com/midnight-trigger/raise-tech-api-server/api/controller"
 )
 
 func RegisterRoutes(e *echo.Echo) {
-	GetImages(e, &controller.Image{})
+	HealthCheck(e, &controller.Image{})
 	PostImage(e, &controller.Image{})
 }
 func RegisterAuthRoutes(e *echo.Group) {
 }
-func GetImages(
+func HealthCheck(
 	e *echo.Echo,
 	inter *controller.Image,
 ) {
-	e.GET("api/v1/image", func(c echo.Context) error {
-		res := inter.GetImages(c)
+	e.GET("health", func(c echo.Context) error {
+		res := inter.HealthCheck(c)
 		return c.JSON(res.Meta.Code, res)
 	})
 }

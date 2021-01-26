@@ -7,7 +7,7 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"github.com/midnight-trigger/todo/configs"
+	"github.com/midnight-trigger/raise-tech-api-server/configs"
 )
 
 // todo complete Claims
