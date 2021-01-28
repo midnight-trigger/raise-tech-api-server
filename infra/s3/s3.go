@@ -44,9 +44,8 @@ func Init() {
 	svc = s3.New(sess)
 }
 
-func UploadImageToS3(file multipart.File, format string, bucket string) (string, error) {
-
-	fileName := fmt.Sprintf("%s.%s", uuid.New(), format)
+func UploadImageToS3(file multipart.File, format string, bucket string) (fileName string, err error) {
+	fileName = fmt.Sprintf("%s.%s", uuid.New(), format)
 
 	upParams := &s3manager.UploadInput{
 		Bucket:      aws.String(bucket),
@@ -55,13 +54,15 @@ func UploadImageToS3(file multipart.File, format string, bucket string) (string,
 		ACL:         aws.String("public-read"),
 		ContentType: aws.String("image/" + format),
 	}
-	_, err := uploader.Upload(upParams)
+	fmt.Println(fileName)
+
+	_, err = uploader.Upload(upParams)
 	if err != nil {
 		err = errors.New(err.Error())
 		logger.L.Error(err)
 	}
 
-	return fileName, err
+	return
 }
 
 func DeleteImage(fileName string) (err error) {

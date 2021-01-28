@@ -11,6 +11,7 @@ import (
 	"github.com/disintegration/imaging"
 	"github.com/labstack/echo"
 	"github.com/midnight-trigger/raise-tech-api-server/api/error_handling"
+	"github.com/midnight-trigger/raise-tech-api-server/infra/mysql"
 	"github.com/midnight-trigger/raise-tech-api-server/infra/s3"
 	"github.com/midnight-trigger/raise-tech-api-server/logger"
 	"github.com/shopspring/decimal"
@@ -19,15 +20,25 @@ import (
 
 type Image struct {
 	Base
+	MImages *mysql.Images
 }
 
-func GetNewImageService() *Image {
-	image := new(Image)
-	return image
+func GetNewImageService() (image *Image) {
+	image = new(Image)
+	image.MImages = mysql.GetNewImage()
+	return
 }
 
 func (s *Image) PostImage(fileName string) (r Result) {
 	r.New()
+
+	image := new(mysql.Images)
+	image.ImageFileName = fileName
+	err := image.Create(image)
+	if err != nil {
+		r.ServerErrorException(errors.New(""), err.Error())
+		logger.L.Error(err)
+	}
 
 	return
 }

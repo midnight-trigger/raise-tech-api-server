@@ -2,4 +2,4 @@ image:
   maxSize: 10240000 # 10M
   maxWidth: 768
   maxHeight: 576
-  bucket: ""
+  bucket: "raise-tech"

@@ -13,7 +13,6 @@ import (
 var db *gorm.DB
 
 func Init() {
-
 	dbLink := fmt.Sprintf(
 		"%s:%s@tcp(%s)/%s?charset=%s&parseTime=True&loc=%s",
 		os.Getenv("DATABASE_MYSQL_USER"),

@@ -9,6 +9,7 @@ require (
 	github.com/disintegration/imaging v1.6.2
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-playground/validator/v10 v10.3.0
+	github.com/golang-migrate/migrate v3.5.4+incompatible // indirect
 	github.com/golang/mock v1.4.4
 	github.com/google/uuid v1.1.1
 	github.com/imroc/req v0.3.0
