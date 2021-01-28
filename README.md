@@ -1,7 +1,8 @@
 # 使用技術
-* バックエンド：Golang1.14（Echo）
+* バックエンド：Golang1.15（Echo）
 * ORM：GORM
 * DB：MySQL8.0.22
+* Infra：AWS（ALB, EC2, RDS, S3）
 
 # ディレクトリ構成
 ```
